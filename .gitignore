@@ -1,0 +1,47 @@
+# Build artifacts
+build/
+Debug/
+Release/
+
+# Compiled binaries
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.d
+*.su
+*.obj
+*.list
+
+# IDE workspace files
+.metadata/
+.settings/
+*.launch
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Eclipse/STM32CubeIDE
+.cproject
+.project
+.mxproject
+
+# VS Code
+.vscode/
+
+# Backup files
+*~
+*.bak
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
