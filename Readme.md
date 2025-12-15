@@ -59,5 +59,6 @@ After initial setup, you only need:
 cd build
 make -j$(nproc)
 arm-none-eabi-objcopy -O binary ThreadX_Os.elf ThreadX_Os.bin
+st-flash erase
 st-flash --reset write ThreadX_Os.bin 0x08000000
 ```
