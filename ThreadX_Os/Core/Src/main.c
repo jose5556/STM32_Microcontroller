@@ -42,9 +42,11 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-FDCAN_HandleTypeDef hfdcan1;
-UART_HandleTypeDef huart1;
+t_canFrames canFrames;
 
+FDCAN_HandleTypeDef hfdcan1;
+
+UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
@@ -72,6 +74,7 @@ static void MX_FDCAN1_Init(void);
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
   memset(&canFrames, 0, sizeof(t_canFrames));
   initCanFrames(&canFrames);
@@ -101,10 +104,8 @@ int main(void)
   MX_ICACHE_Init();
   MX_USART1_UART_Init();
   MX_FDCAN1_Init();
-
-  initCanFrames(&canFrames);
   /* USER CODE BEGIN 2 */
-
+  initCanFrames(&canFrames);
   /* USER CODE END 2 */
 
   MX_ThreadX_Init();
@@ -542,8 +543,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(WRLS_WKUP_B_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : WRLS_NOTIFY_Pin Mems_INT_IIS2MDC_Pin USB_IANA_Pin */
-  GPIO_InitStruct.Pin = WRLS_NOTIFY_Pin|Mems_INT_IIS2MDC_Pin|USB_IANA_Pin;
+  /*Configure GPIO pins : WRLS_NOTIFY_Pin PD15 Mems_INT_IIS2MDC_Pin USB_IANA_Pin */
+  GPIO_InitStruct.Pin = WRLS_NOTIFY_Pin|GPIO_PIN_15|Mems_INT_IIS2MDC_Pin|USB_IANA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);

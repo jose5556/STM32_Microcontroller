@@ -27,11 +27,13 @@
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
-/* USER CODE END PTD */
-/* USER CODE BEGIN PV */
+/* USER CODE BEGIN PTD */
 
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-t_canFrames canFrames; // Define the global variable here
+t_threads threads[1];
 
 /* USER CODE END PV */
 
@@ -45,7 +47,7 @@ t_canFrames canFrames; // Define the global variable here
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 
-t_threads threads[1];
+/* USER CODE BEGIN PD */
 
 /* USER CODE END PV */
 
@@ -58,31 +60,30 @@ void uart_send(const char *msg);
 /**
   * @brief  Application ThreadX Initialization.
   * @param memory_ptr: memory pointer
-  * @param canFrames: pointer to CAN frames structure
   * @retval int
   */
 UINT App_ThreadX_Init(VOID *memory_ptr)
 {
+  UINT status;
   /* USER CODE BEGIN App_ThreadX_MEM_POOL */
   
   uart_send("\r\n=== Initializing ThreadX ===\r\n");
-  UINT status = tx_thread_create(&threads[0].thread, "CANThread", thread_0_entry, 0,
+  status = tx_thread_create(&threads[0].thread, "CANThread", thread_0_entry, 0,
                                   threads[0].stack, 1024,
                                   THREAD_0_PRIO, THREAD_0_PRIO,
                                   TX_NO_TIME_SLICE,
                                   TX_AUTO_START);
 
   /* USER CODE END App_ThreadX_MEM_POOL */
-
-
   /* USER CODE BEGIN App_ThreadX_Init */
   /* USER CODE END App_ThreadX_Init */
+
   return (status);
 }
 
   /**
   * @brief  Function that implements the kernel's initialization.
-  * @param  canFrames: pointer to CAN frames structure
+  * @param  None
   * @retval None
   */
 void MX_ThreadX_Init(void)

@@ -54,6 +54,7 @@ extern t_canFrames          canFrames;
 /* USER CODE END EC */
 
 /* Private defines -----------------------------------------------------------*/
+
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
@@ -70,9 +71,8 @@ extern t_canFrames          canFrames;
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
-UINT  App_ThreadX_Init(VOID *memory_ptr);
-void  MX_ThreadX_Init(void);
-void  uart_send(const char *msg);
+UINT App_ThreadX_Init(VOID *memory_ptr);
+void MX_ThreadX_Init(void);
 
 /* USER CODE BEGIN EFP */
 
