@@ -43,16 +43,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 FDCAN_HandleTypeDef hfdcan1;
-
 UART_HandleTypeDef huart1;
 
-/* USER CODE BEGIN PV */
 
-FDCAN_FilterTypeDef sFilterConfig;
-FDCAN_TxHeaderTypeDef TxHeader;
-FDCAN_RxHeaderTypeDef RxHeader;
-uint8_t TxData_Node1_To_Node2[] = {0x10, 0x32, 0x54, 0x76, 0x98, 0x00, 0x11, 0x22};
-uint8_t RxData_From_Node2[8];
+/* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
 
@@ -78,9 +72,9 @@ static void MX_FDCAN1_Init(void);
   */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
-
+  memset(&canFrames, 0, sizeof(t_canFrames));
+  initCanFrames(&canFrames);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -107,41 +101,9 @@ int main(void)
   MX_ICACHE_Init();
   MX_USART1_UART_Init();
   MX_FDCAN1_Init();
-  /* USER CODE BEGIN 2 */
-  
-  // Configure TX header for Node 1 -> Node 2
-  TxHeader.Identifier = 0x1;
-  TxHeader.IdType = FDCAN_STANDARD_ID;
-  TxHeader.TxFrameType = FDCAN_DATA_FRAME;
-  TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-  TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-  TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
-  TxHeader.FDFormat = FDCAN_CLASSIC_CAN;
-  TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-  TxHeader.MessageMarker = 0x0;
 
-  // Continuously send CAN messages
-  while (0)
-  {
-      // Check CAN error state and reset if needed
-      if (HAL_FDCAN_GetError(&hfdcan1) != HAL_FDCAN_ERROR_NONE)
-      {
-          // Reset FDCAN to recover from error state
-          HAL_FDCAN_Stop(&hfdcan1);
-          HAL_FDCAN_Start(&hfdcan1);
-      }
-      
-      // Send message
-      if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, TxData_Node1_To_Node2) != HAL_OK)
-      {
-          // If send fails, continue anyway (might be in error state)
-          HAL_Delay(100);
-          continue;
-      }
-      
-      // Delay between messages (1 second = 1000ms)
-      HAL_Delay(1000);
-  }
+  initCanFrames(&canFrames);
+  /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
@@ -276,15 +238,14 @@ static void MX_FDCAN1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN FDCAN1_Init 2 */
-  
-  // Configure filter to accept all standard CAN IDs (0x000 - 0x7FF)
+
   FDCAN_FilterTypeDef filterConfig;
   filterConfig.IdType = FDCAN_STANDARD_ID;
   filterConfig.FilterIndex = 0;
   filterConfig.FilterType = FDCAN_FILTER_RANGE;
   filterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
-  filterConfig.FilterID1 = 0x000;
-  filterConfig.FilterID2 = 0x7FF;
+  filterConfig.FilterID1 = 0x100;
+  filterConfig.FilterID2 = 0x250;
   
   if (HAL_FDCAN_ConfigFilter(&hfdcan1, &filterConfig) != HAL_OK)
   {

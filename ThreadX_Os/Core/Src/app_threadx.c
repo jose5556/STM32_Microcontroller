@@ -27,12 +27,13 @@
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
+/* USER CODE BEGIN PV */
 
-/* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+t_canFrames canFrames; // Define the global variable here
+
+/* USER CODE END PV */
 
 /* USER CODE END PD */
 
@@ -43,7 +44,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-TX_THREAD thread_0;
+
+t_threads threads[1];
 
 /* USER CODE END PV */
 
@@ -56,33 +58,36 @@ void uart_send(const char *msg);
 /**
   * @brief  Application ThreadX Initialization.
   * @param memory_ptr: memory pointer
+  * @param canFrames: pointer to CAN frames structure
   * @retval int
   */
 UINT App_ThreadX_Init(VOID *memory_ptr)
 {
   /* USER CODE BEGIN App_ThreadX_MEM_POOL */
   
-  UINT status = tx_thread_create(&thread_0, "Thread 0", thread_0_entry, 0,
-                                  memory_ptr, 1024,
-                                  1, 1,
+  uart_send("\r\n=== Initializing ThreadX ===\r\n");
+  UINT status = tx_thread_create(&threads[0].thread, "CANThread", thread_0_entry, 0,
+                                  threads[0].stack, 1024,
+                                  THREAD_0_PRIO, THREAD_0_PRIO,
                                   TX_NO_TIME_SLICE,
                                   TX_AUTO_START);
 
   /* USER CODE END App_ThreadX_MEM_POOL */
+
+
   /* USER CODE BEGIN App_ThreadX_Init */
   /* USER CODE END App_ThreadX_Init */
-  return status;
+  return (status);
 }
 
   /**
   * @brief  Function that implements the kernel's initialization.
-  * @param  None
+  * @param  canFrames: pointer to CAN frames structure
   * @retval None
   */
 void MX_ThreadX_Init(void)
 {
   /* USER CODE BEGIN Before_Kernel_Start */
-
   /* USER CODE END Before_Kernel_Start */
 
   tx_kernel_enter();
@@ -94,35 +99,36 @@ void MX_ThreadX_Init(void)
 
 /* USER CODE BEGIN 1 */
 
-// UART helper function
-extern UART_HandleTypeDef huart1;
-
-void uart_send(const char *msg) {
+void    uart_send(const char *msg) 
+{
     HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), 100);
 }
 
 // Thread 0 entry function
-void thread_0_entry(ULONG thread_input) {
+void thread_0_entry(ULONG input) 
+{
     ULONG counter = 0;
     char buffer[64];
+    uint8_t speedData[8] = {0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80};
     
     uart_send("\r\n=== ThreadX Started! ===\r\n");
-    uart_send("Thread 0 running...\r\n");
-    
+    uart_send("CAN Thread running...\r\n");
+
     while(1) {
-        // Debug message
-        snprintf(buffer, sizeof(buffer), "Thread 0 alive: %lu\r\n", counter++);
-        uart_send(buffer);
+        // Send CAN message with Speed header
+        if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &canFrames.TxHeader_Speed, speedData) == HAL_OK) {
+            snprintf(buffer, sizeof(buffer), "CAN Msg sent: %lu\r\n", counter++);
+            uart_send(buffer);
+        } else {
+            uart_send("CAN send failed!\r\n");
+            HAL_FDCAN_Stop(&hfdcan1);
+            HAL_FDCAN_Start(&hfdcan1);
+            tx_thread_sleep(100);
+            continue ;
+        }
         
         // Sleep for 1 second
         tx_thread_sleep(1000);
-        
-        // Delete after 5 iterations
-        if (counter >= 5) {
-            uart_send("\r\nThread 0 deleting itself...\r\n");
-            tx_thread_delete(&thread_0);
-            // Não executa daqui para frente
-        }
     }
 }
 

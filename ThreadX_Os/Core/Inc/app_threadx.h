@@ -32,26 +32,35 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <main.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
+typedef struct s_threads {
+    TX_THREAD thread;
+    uint8_t stack[1024];
+} t_threads;
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+extern FDCAN_HandleTypeDef  hfdcan1;
+extern UART_HandleTypeDef   huart1;
+extern t_canFrames          canFrames;
 /* USER CODE END EC */
 
 /* Private defines -----------------------------------------------------------*/
-
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
 
 /* Main thread defines -------------------------------------------------------*/
 /* USER CODE BEGIN MTD */
+#define THREAD_0_PRIO       1
 
 /* USER CODE END MTD */
 
@@ -61,8 +70,9 @@ extern "C" {
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
-UINT App_ThreadX_Init(VOID *memory_ptr);
-void MX_ThreadX_Init(void);
+UINT  App_ThreadX_Init(VOID *memory_ptr);
+void  MX_ThreadX_Init(void);
+void  uart_send(const char *msg);
 
 /* USER CODE BEGIN EFP */
 
