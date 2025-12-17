@@ -1,36 +1,67 @@
 #include "app_threadx.h"
 
-void thread_SensorSpeed(ULONG input) 
+#define WHEEL_DIAMETER  0.212f
+#define PPR             20.0f
+
+#ifndef TX_TIMER_TICKS_PER_SECOND
+    #define TX_TIMER_TICKS_PER_SECOND 1000
+#endif
+
+// tire has the diameter of 0.21 m
+// RPM = pulse / PPR * (60 / dt_seconds)
+
+static float convertValuesRPM(void)
 {
-    ULONG counter = 0;
-    char buffer[32];
-    uint8_t speedData[8] = {0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80};
-  
-    uart_send("\r\n=== ThreadX Started! ===\r\n");
-    uart_send("CAN Thread running...\r\n");
+    static ULONG last_time_ticks = 0;
+    static ULONG last_count = 0;
+    static UINT is_first_run = 1;
 
-    while(1) {
+    ULONG current_time_ticks = tx_time_get();
+    ULONG current_count = htim1.Instance->CNT;
 
-        int value = HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_15);
-        // Send CAN message with Speed header
-        if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &canFrames.TxHeader_Speed, speedData) == HAL_OK) {
-            snprintf(buffer, sizeof(buffer), "CAN Msg sent: %lu\r\n", counter++);
-            uart_send(buffer);
-        } else {
-            uart_send("CAN send failed!\r\n");
-            HAL_FDCAN_Stop(&hfdcan1);
-            HAL_FDCAN_Start(&hfdcan1);
-            tx_thread_sleep(100);
-            continue ;
-        }
+    if (is_first_run)
+    {
+        last_count = current_count;
+        last_time_ticks = current_time_ticks;
+        is_first_run = 0;
+        return 0.0f;
+    }
 
-        if (value == 1) {
-            uart_send("PIN HIGH\r\n");
-        } else {
-            uart_send("PIN LOW\r\n");
-        }
-        
-        // Sleep for 1.5 seconds
+    ULONG delta_ticks = current_time_ticks - last_time_ticks;
+    float dt = (float)delta_ticks / (float)TX_TIMER_TICKS_PER_SECOND;
+
+    ULONG pulses;
+    if (current_count >= last_count)
+        pulses = current_count - last_count;
+    else
+        pulses = (htim1.Init.Period - last_count) + current_count + 1;
+
+    last_count = current_count;
+    last_time_ticks = current_time_ticks;
+
+    // Cálculo do RPM
+    float rpm = ((float)pulses / PPR) * (60.0f / dt);
+    return rpm;
+
+}
+
+VOID thread_SensorSpeed(ULONG thread_input)
+{
+    char msg[32];
+
+    HAL_TIM_Base_Stop(&htim1);
+    HAL_TIM_Base_Start(&htim1);
+
+    while (1)
+    {
+        ULONG cr1_reg = htim1.Instance->CR1;
+        ULONG cnt_reg = htim1.Instance->CNT;
+
+        snprintf(msg, sizeof(msg), "DEBUG: CR1=%lu | CNT=%lu\r\n", cr1_reg, cnt_reg);
+        HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), 100);
+
         tx_thread_sleep(500);
+
+        g_speed = convertValuesRPM();
     }
 }

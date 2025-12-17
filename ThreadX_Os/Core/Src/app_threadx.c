@@ -33,7 +33,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-t_threads threads[1];
+t_threads threads[2];
+float     g_speed;
 
 /* USER CODE END PV */
 
@@ -53,8 +54,6 @@ t_threads threads[1];
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-void thread_SensorSpeed(ULONG thread_input);
-void uart_send(const char *msg);
 /* USER CODE END PFP */
 
 /**
@@ -74,9 +73,19 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
                                   TX_NO_TIME_SLICE,
                                   TX_AUTO_START);
   if (ret == TX_THREAD_ERROR)
-    uart_send("Thread creation failed!\r\n");
+    uart_send("Speed sensor thread creation failed!\r\n");
   else
-    uart_send("\r\n=== ThreadX Started! ===\r\n");
+    uart_send("\r\n=== Speed sensor thread Started! ===\r\n");
+
+  ret = tx_thread_create(&threads[1].thread, "TxCanThread", thread_tx_can, 0,
+                                  threads[1].stack, 1024,
+                                  THREAD_0_PRIO, THREAD_0_PRIO,
+                                  TX_NO_TIME_SLICE,
+                                  TX_AUTO_START);
+  if (ret == TX_THREAD_ERROR)
+    uart_send("CAN TX thread creation failed!\r\n");
+  else
+    uart_send("\r\n=== CAN TX thread Started! ===\r\n");
   /* USER CODE END App_ThreadX_MEM_POOL */
   /* USER CODE BEGIN App_ThreadX_Init */
   /* USER CODE END App_ThreadX_Init */

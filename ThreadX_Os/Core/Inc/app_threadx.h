@@ -52,6 +52,7 @@ extern FDCAN_HandleTypeDef  hfdcan1;
 extern UART_HandleTypeDef   huart1;
 extern TIM_HandleTypeDef    htim1;
 extern t_canFrames          canFrames;
+extern float                g_speed;
 /* USER CODE END EC */
 
 /* Private defines -----------------------------------------------------------*/
@@ -76,8 +77,13 @@ UINT App_ThreadX_Init(VOID *memory_ptr);
 void MX_ThreadX_Init(void);
 
 /* USER CODE BEGIN EFP */
-void thread_SensorSpeed(ULONG thread_input);
-void uart_send(const char *msg);
+
+//threads
+VOID thread_SensorSpeed(ULONG thread_input);
+VOID thread_tx_can(ULONG thread_input);
+
+//utils
+VOID uart_send(const char *msg);
 
 /* USER CODE END EFP */
 
