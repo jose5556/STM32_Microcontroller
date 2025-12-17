@@ -64,23 +64,23 @@ void uart_send(const char *msg);
   */
 UINT App_ThreadX_Init(VOID *memory_ptr)
 {
-  UINT status;
+  UINT ret = TX_SUCCESS;
   /* USER CODE BEGIN App_ThreadX_MEM_POOL */
   
   uart_send("\r\n=== Initializing ThreadX ===\r\n");
-  status = tx_thread_create(&threads[0].thread, "CANThread", thread_SensorSpeed, 0,
+  ret = tx_thread_create(&threads[0].thread, "CANThread", thread_SensorSpeed, 0,
                                   threads[0].stack, 1024,
                                   THREAD_0_PRIO, THREAD_0_PRIO,
                                   TX_NO_TIME_SLICE,
                                   TX_AUTO_START);
-  if (status == TX_THREAD_ERROR)
+  if (ret == TX_THREAD_ERROR)
     uart_send("Thread creation failed!\r\n");
 
   /* USER CODE END App_ThreadX_MEM_POOL */
   /* USER CODE BEGIN App_ThreadX_Init */
   /* USER CODE END App_ThreadX_Init */
 
-  return (status);
+  return ret;
 }
 
   /**

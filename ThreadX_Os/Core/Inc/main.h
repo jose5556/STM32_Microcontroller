@@ -57,9 +57,10 @@ typedef struct s_canFrames {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void initCanFrames(t_canFrames *canFrames);
 
 /* USER CODE BEGIN EFP */
+
+void initCanFrames(t_canFrames *canFrames);
 
 /* USER CODE END EFP */
 
