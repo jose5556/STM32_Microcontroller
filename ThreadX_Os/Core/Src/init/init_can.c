@@ -1,14 +1,14 @@
-#include "main.h"
+#include "app_threadx.h"
 
-static void    TxSpeedConf(FDCAN_TxHeaderTypeDef *TxHeader);
-//static void    TxSteeringThrottleConf(FDCAN_TxHeaderTypeDef *TxHeader);
-//static void    TxBatteryConf(FDCAN_TxHeaderTypeDef *TxHeader);
+static void TxSpeedConf(FDCAN_TxHeaderTypeDef *TxHeader);
+static void TxSteeringThrottleConf(FDCAN_TxHeaderTypeDef *TxHeader);
+static void TxBatteryConf(FDCAN_TxHeaderTypeDef *TxHeader);
 
 void initCanFrames(t_canFrames *canFrames) 
 {
-    TxSpeedConf(&canFrames->TxHeader_Speed);
-    //TxSteeringThrottleConf(&canFrames->TxHeader_Steering_Throttle);
-    //TxBatteryConf(&canFrames->TxHeader_Battery);
+    TxSpeedConf(&canFrames->tx_header_speed);
+    TxSteeringThrottleConf(&canFrames->tx_header_steering_throttle);
+    TxBatteryConf(&canFrames->tx_header_battery);
 }
 
 static void    TxSpeedConf(FDCAN_TxHeaderTypeDef *TxHeader) 
@@ -24,7 +24,7 @@ static void    TxSpeedConf(FDCAN_TxHeaderTypeDef *TxHeader)
     TxHeader->MessageMarker = 0x0;
 }
 
-/* static void    TxSteeringThrottleConf(FDCAN_TxHeaderTypeDef *TxHeader) 
+static void    TxSteeringThrottleConf(FDCAN_TxHeaderTypeDef *TxHeader) 
 {
     TxHeader->Identifier = 0x201;
     TxHeader->IdType = FDCAN_STANDARD_ID;
@@ -48,4 +48,4 @@ static void    TxBatteryConf(FDCAN_TxHeaderTypeDef *TxHeader)
     TxHeader->FDFormat = FDCAN_CLASSIC_CAN;
     TxHeader->TxEventFifoControl = FDCAN_NO_TX_EVENTS;
     TxHeader->MessageMarker = 0x0;
-} */
+}

@@ -37,12 +37,6 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
-typedef struct s_canFrames {
-    FDCAN_TxHeaderTypeDef TxHeader_Speed;             // ID 0x200
-    FDCAN_TxHeaderTypeDef TxHeader_Steering_Throttle; // ID 0x201
-    FDCAN_TxHeaderTypeDef TxHeader_Battery;           // ID 0x202
-} t_canFrames;
-
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -59,8 +53,6 @@ typedef struct s_canFrames {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
-void initCanFrames(t_canFrames *canFrames);
 
 /* USER CODE END EFP */
 

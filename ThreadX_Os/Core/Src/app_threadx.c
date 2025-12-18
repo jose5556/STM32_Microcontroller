@@ -33,8 +33,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-t_threads threads[2];
-float     g_speed;
 
 /* USER CODE END PV */
 
@@ -47,6 +45,8 @@ float     g_speed;
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+TX_QUEUE    can_tx_queue;
+t_threads   threads[2];
 
 /* USER CODE BEGIN PD */
 
@@ -54,6 +54,7 @@ float     g_speed;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
+
 /* USER CODE END PFP */
 
 /**
@@ -66,28 +67,18 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
   UINT ret = TX_SUCCESS;
   /* USER CODE BEGIN App_ThreadX_MEM_POOL */
   
-  uart_send("\r\n=== Initializing ThreadX ===\r\n");
-  ret = tx_thread_create(&threads[0].thread, "CANThread", thread_SensorSpeed, 0,
-                                  threads[0].stack, 1024,
-                                  THREAD_0_PRIO, THREAD_0_PRIO,
-                                  TX_NO_TIME_SLICE,
-                                  TX_AUTO_START);
-  if (ret == TX_THREAD_ERROR)
-    uart_send("Speed sensor thread creation failed!\r\n");
-  else
-    uart_send("\r\n=== Speed sensor thread Started! ===\r\n");
+  ret = tx_queue_create(&can_tx_queue, "CAN TX Queue", 
+                        sizeof(t_can_msg) / sizeof(ULONG),
+                        memory_ptr, QUEUE_SIZE * sizeof(t_can_msg));
+  if (ret != TX_SUCCESS)
+    uart_send("ERROR! Failed queue creation.\r\n");
 
-  ret = tx_thread_create(&threads[1].thread, "TxCanThread", thread_tx_can, 0,
-                                  threads[1].stack, 1024,
-                                  THREAD_0_PRIO, THREAD_0_PRIO,
-                                  TX_NO_TIME_SLICE,
-                                  TX_AUTO_START);
-  if (ret == TX_THREAD_ERROR)
-    uart_send("CAN TX thread creation failed!\r\n");
-  else
-    uart_send("\r\n=== CAN TX thread Started! ===\r\n");
+  if (init_threads() != TX_SUCCESS)
+    exit(EXIT_FAILURE);
+
   /* USER CODE END App_ThreadX_MEM_POOL */
   /* USER CODE BEGIN App_ThreadX_Init */
+  uart_send("\r\n=== ThreadX Initialized ===\r\n");
   /* USER CODE END App_ThreadX_Init */
 
   return ret;

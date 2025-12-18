@@ -45,8 +45,10 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    Core/Src/init_can.c
-    Core/Src/speedSensor.c
+    Core/Src/init/init_can.c
+    Core/Src/init/init_threads.c
+    Core/Src/threads/speedSensor.c
+    Core/Src/threads/tx_can.c
     Core/Src/utils.c
 )
 

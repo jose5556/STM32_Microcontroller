@@ -85,8 +85,6 @@ int main(void)
   // PB_8 - FDCAN1_RX
   // PB_9 - FDCAN1_TX
 
-  memset(&canFrames, 0, sizeof(t_canFrames));
-  initCanFrames(&canFrames);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
