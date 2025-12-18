@@ -48,7 +48,7 @@ This project implements a real-time speed sensor and CAN communication system on
  - Add new CAN message types by extending the t_can_msg struct and switch-case in the CAN_TX thread.
  - Integrate additional sensors or actuators by creating new threads.
  - Implement a CAN_RX thread to receive, decode, and process incoming CAN frames.
- - Integrate new thread to comunicate via I2C to motors/servo.
+ - Integrate new thread to communicate via I2C to motors/servo.
 
 # Instructions to Build and Flash to STM32 Microcontroller
 
