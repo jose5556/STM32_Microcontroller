@@ -50,8 +50,6 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
-t_canFrames canFrames;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -113,7 +111,7 @@ int main(void)
   MX_FDCAN1_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  initCanFrames(&canFrames);
+
   /* USER CODE END 2 */
 
   MX_ThreadX_Init();

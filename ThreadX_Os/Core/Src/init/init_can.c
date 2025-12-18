@@ -4,6 +4,7 @@ static void TxSpeedConf(FDCAN_TxHeaderTypeDef *TxHeader);
 static void TxSteeringThrottleConf(FDCAN_TxHeaderTypeDef *TxHeader);
 static void TxBatteryConf(FDCAN_TxHeaderTypeDef *TxHeader);
 
+// Configuration of CAN frame for speed data
 void initCanFrames(t_canFrames *canFrames) 
 {
     TxSpeedConf(&canFrames->tx_header_speed);

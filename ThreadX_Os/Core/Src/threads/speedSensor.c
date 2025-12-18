@@ -1,12 +1,5 @@
 #include "app_threadx.h"
 
-#define WHEEL_DIAMETER  0.212f
-#define PPR             10.0f
-
-#ifndef TX_TIMER_TICKS_PER_SECOND
-    #define TX_TIMER_TICKS_PER_SECOND 1000
-#endif
-
 // tire has the diameter of 0.21 m
 // RPM = pulse / PPR * (60 / dt_seconds)
 
@@ -43,7 +36,7 @@ static uint16_t convertValuesRPM(void)
     last_count = current_count;
     last_time_ticks = current_time_ticks;
 
-    float rpm_f = ((float)pulses / PPR) * (60.0f / dt);
+    float rpm_f = ((float)pulses / PPW) * (60.0f / dt);
 
     if (rpm_f < 0.0f)
         rpm_f = 0.0f;
@@ -53,7 +46,7 @@ static uint16_t convertValuesRPM(void)
     return (uint16_t)rpm_f;
 }
 
-
+// Thread responsible for reading speed sensor and sending RPM via CAN
 VOID thread_SensorSpeed(ULONG thread_input)
 {
     char debug[32];
@@ -64,6 +57,7 @@ VOID thread_SensorSpeed(ULONG thread_input)
     memset(&msg, 0, sizeof(t_can_msg));
     msg.type = CAN_MSG_SPEED;
 
+    // Reset / start timer, responsible to control STM32 timer
     HAL_TIM_Base_Stop(&htim1);
     __HAL_TIM_SET_COUNTER(&htim1, 0);
     HAL_TIM_Base_Start(&htim1);

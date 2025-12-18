@@ -39,22 +39,26 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
+// Thread structure
+typedef struct s_threads {
+  TX_THREAD thread;
+  uint8_t   stack[1024];
+} t_threads;
+
+// CAN message types
 typedef enum {
   CAN_MSG_SPEED,
   CAN_MSG_STEERING_THROTTLE,
   CAN_MSG_BATTERY
 } e_can_msg_type;
 
-typedef struct s_threads {
-  TX_THREAD thread;
-  uint8_t   stack[1024];
-} t_threads;
-
+// CAN message structure
 typedef struct s_can_message {
   e_can_msg_type type;
   uint8_t        data[8];
 } t_can_msg;
 
+// CAN frames structure
 typedef struct s_canFrames {
   FDCAN_TxHeaderTypeDef tx_header_speed;
   FDCAN_TxHeaderTypeDef tx_header_steering_throttle;
@@ -81,8 +85,21 @@ extern t_threads            threads[2];
 
 /* Main thread defines -------------------------------------------------------*/
 /* USER CODE BEGIN MTD */
+
+//Thread 0 (Speed Sensor) max priority
 #define THREAD_0_PRIO   1
+
+//Queue size (number of messages)
 #define QUEUE_SIZE      8
+
+//Wheel diameter in meters
+#define WHEEL_DIAMETER  0.212f
+
+//Pulses per wheel (how many holes tire has)
+#define PPW             10.0f
+
+// How many timer ticks per second
+#define TX_TIMER_TICKS_PER_SECOND 1000
 
 /* USER CODE END MTD */
 
